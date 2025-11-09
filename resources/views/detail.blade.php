@@ -110,9 +110,6 @@
 
     <script>
         document.getElementById('year').textContent = new Date().getFullYear();
-
-        // === DATA PRODUK ===
-        // CATATAN: Dalam implementasi Laravel sesungguhnya, data ini harus diambil dari Controller, bukan di-hardcode di JS.
         const PRODUCTS = [{
                 id: 1,
                 name: "Kaos Putih Basic",
@@ -179,9 +176,7 @@
             }
         ];
 
-        // === UTIL ===
         function getQueryParams() {
-            // Mengambil ID dari URL path /detail/{id} jika menggunakan route, atau dari query ?id=
             const pathParts = window.location.pathname.split('/');
             const idFromPath = pathParts.length > 2 && pathParts[pathParts.length - 2] === 'detail' ? pathParts[pathParts
                 .length - 1] : null;
@@ -197,7 +192,7 @@
             return 'Rp' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         }
 
-        // === SISTEM KERANJANG ===
+
         const CART_KEY = 'tubes_cart_v1';
 
         function getCart() {
@@ -228,7 +223,6 @@
             alert(item.name + " berhasil ditambahkan ke keranjang!");
         }
 
-        // === RENDER DETAIL PRODUK ===
         function renderProductDetail(product) {
             const html = `
         <div class="col-12 col-md-6">
@@ -261,7 +255,6 @@
       `;
             document.getElementById('productArea').innerHTML = html;
 
-            // Event Tambah ke Keranjang
             document.getElementById('addCartBtn').addEventListener('click', () => {
                 const size = document.getElementById('sizeSelect').value;
                 addToCart({
@@ -272,7 +265,6 @@
             });
         }
 
-        // === PRODUK TERKAIT ===
         function renderRelated(product) {
             const related = PRODUCTS.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
             const grid = document.getElementById('relatedGrid');
@@ -288,7 +280,9 @@
               <h6 class="small mb-1">${p.name}</h6>
               <div class="d-flex justify-content-between align-items-center">
                 <small class="text-muted">${formatRupiah(p.price)}</small>
-                                <a href="{{ route('detail', ['id' => 'RELATED_ID']) }}".replace('RELATED_ID', ${p.id})" class="btn btn-sm btn-outline-brand">Lihat</a>
+                    <a href="/detail/${p.id}" class="btn btn-sm btn-outline-brand">Lihat</a>
+
+
               </div>
             </div>
           </div>
@@ -296,7 +290,6 @@
       `).join('');
         }
 
-        // === INISIALISASI ===
         (function init() {
             const q = getQueryParams();
             let id = parseInt(q.id);
