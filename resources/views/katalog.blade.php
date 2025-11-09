@@ -127,8 +127,6 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // === DATA PRODUK ===
-    // CATATAN: Dalam implementasi Laravel sesungguhnya, data ini harus diambil dari Controller, bukan di-hardcode di JS.
     const PRODUCTS = [
       { id:1, name:"Kaos Putih Basic", category:"kaos", price:120000, image:"", desc:"Kaos cotton combed, nyaman sehari-hari."},
       { id:2, name:"Hoodie Hitam Oversize", category:"hoodie", price:250000, image:"", desc:"Fleece lembut, oversized fit."},
@@ -140,7 +138,6 @@
       { id:8, name:"Celana Denim Regular", category:"celana", price:200000, image:"", desc:"Denim tahan lama."}
     ];
 
-    // === UI STATE ===
     let state = {
       products: PRODUCTS.slice(),
       filtered: PRODUCTS.slice(),
@@ -162,7 +159,6 @@
     const searchBtn = document.getElementById('searchBtn');
     const sortSelect = document.getElementById('sortSelect');
 
-    // === KATEGORI ===
     const categories = [...new Set(PRODUCTS.map(p => p.category))];
     function renderCategories(){
       categoryList.innerHTML = '';
@@ -197,11 +193,9 @@
       });
     }
 
-    // UTIL
     function capitalize(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
     function formatRupiah(n){ return 'Rp' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
 
-    // === RENDER PRODUK ===
     function renderProducts(){
       let list = state.filtered.slice();
       const sortVal = sortSelect.value;
@@ -227,7 +221,9 @@
               <div class="mt-auto d-flex justify-content-between align-items-center">
                 <strong>${formatRupiah(p.price)}</strong>
                 <div>
-                  <a href="{{ route('detail', ['id' => 'DETAIL_ID']) }}".replace('DETAIL_ID', ${p.id})" class="btn btn-outline-brand btn-sm">Detail</a> 
+                 
+                  <a href="/detail/${p.id}" class="btn btn-outline-brand btn-sm">Detail</a>
+
                   <button class="btn btn-brand btn-sm addToCartBtn">Tambah</button>
                 </div>
               </div>
@@ -238,7 +234,6 @@
 
       renderPagination(pages);
 
-      // aktifkan tombol tambah
       initAddToCartButtons();
     }
 
@@ -247,7 +242,7 @@
       for(let i=1;i<=totalPages;i++){
         const li = document.createElement('li');
         li.className = 'page-item ' + (i===state.page ? 'active' : '');
-        li.innerHTML = <a class="page-link" href="#" data-page="${i}">${i}</a>;
+        li.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
         paginationEl.appendChild(li);
       }
       paginationEl.querySelectorAll('a.page-link').forEach(a=>{
@@ -259,7 +254,6 @@
       });
     }
 
-    // === FILTER ===
     function applyFilters(){
       let list = PRODUCTS.slice();
       if(state.selectedCategory) list = list.filter(p => p.category === state.selectedCategory);
@@ -305,7 +299,6 @@
       if(q.priceMax){ const v = parseInt(q.priceMax); if(!isNaN(v)){ state.priceMax = v; priceMaxInput.value = v; priceMaxLabel.textContent = formatRupiah(v); } }
     }
 
-    // === SISTEM KERANJANG (LOCAL STORAGE - Akan diganti) ===
     const CART_KEY = 'tubes_cart_v1';
     function getCart(){ return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
     function setCart(c){ localStorage.setItem(CART_KEY, JSON.stringify(c)); updateCartCount(); }
@@ -325,7 +318,6 @@
     }
 
     function initAddToCartButtons(){
-      // Dalam implementasi Laravel, tombol ini akan mengirim POST request ke CartController
       document.querySelectorAll('.addToCartBtn').forEach(btn=>{
         btn.addEventListener('click', ()=>{
           const card = btn.closest('.product-card');
@@ -337,7 +329,6 @@
       });
     }
 
-    // === INIT ===
     (function init(){
       renderCategories();
       initFromUrl();
