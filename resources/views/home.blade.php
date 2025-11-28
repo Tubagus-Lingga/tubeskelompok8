@@ -84,13 +84,37 @@
           <li class="nav-item"><a class="nav-link" href="#">Promo</a></li>
           <li class="nav-item"><a class="nav-link" href="#">Bantuan</a></li>
 
-          @guest
+         
+         
+            @auth
+            <li class="nav-item dropdown ms-2">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownUser" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Halo, **{{ Auth::user()->name }}**
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownUser">
+                    <li><a class="dropdown-item" href="#">Dashboard Saya</a></li>
+                    <li><a class="dropdown-item" href="#">Riwayat Pesanan</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="dropdown-item text-danger">
+                                Keluar
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </li>
+            @endauth
+
+            @guest
             <li class="nav-item ms-2"><a class="btn btn-outline-primary" href="{{ route('login') }}">Masuk</a></li>
             <li class="nav-item ms-2"><a class="btn btn-primary" href="{{ route('register') }}">Daftar</a></li>
-          @endguest
+            @endguest
+        
           
           <li class="nav-item ms-2">
-            <a class="btn btn-primary" href="cart.html"> 
+            <a class="btn btn-primary" href="{{ route('cart.index') }}"> 
               Keranjang (<span id="cartCount">0</span>)
             </a>
           </li>
@@ -169,7 +193,7 @@
               <div class="mt-auto d-flex justify-content-between align-items-center">
                 <strong>Rp120.000</strong>
                 <div>
-                  <a href="{{ route('detail', ['id' => 1]) }}" class="btn btn-outline-primary btn-sm">Detail</a> 
+                  <a href="{{ route('detail', ['slug' => 1]) }}" class="btn btn-outline-primary btn-sm">Detail</a> 
                   <button class="btn btn-primary btn-sm addToCartBtn">Tambah</button>
                 </div>
               </div>
@@ -187,7 +211,7 @@
               <div class="mt-auto d-flex justify-content-between align-items-center">
                 <strong>Rp250.000</strong>
                 <div>
-                  <a href="{{ route('detail', ['id' => 2]) }}" class="btn btn-outline-primary btn-sm">Detail</a> 
+                  <a href="{{ route('detail', ['slug' => 2]) }}" class="btn btn-outline-primary btn-sm">Detail</a> 
                   <button class="btn btn-primary btn-sm addToCartBtn">Tambah</button>
                 </div>
               </div>
@@ -205,7 +229,7 @@
               <div class="mt-auto d-flex justify-content-between align-items-center">
                 <strong>Rp180.000</strong>
                 <div>
-                  <a href="{{ route('detail', ['id' => 3]) }}" class="btn btn-outline-primary btn-sm">Detail</a> 
+                  <a href="{{ route('detail', ['slug' => 3]) }}" class="btn btn-outline-primary btn-sm">Detail</a> 
                   <button class="btn btn-primary btn-sm addToCartBtn">Tambah</button>
                 </div>
               </div>
@@ -223,7 +247,7 @@
               <div class="mt-auto d-flex justify-content-between align-items-center">
                 <strong>Rp140.000</strong>
                 <div>
-                  <a href="{{ route('detail', ['id' => 4]) }}" class="btn btn-outline-primary btn-sm">Detail</a> 
+                  <a href="{{ route('detail', ['slug' => 4]) }}" class="btn btn-outline-primary btn-sm">Detail</a> 
                   <button class="btn btn-primary btn-sm addToCartBtn">Tambah</button>
                 </div>
               </div>
@@ -259,12 +283,10 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // FIXED: Menggunakan placeholder route Laravel di dalam JS
     function goCategory(cat){
       window.location.href = '{{ route('katalog') }}?category=' + encodeURIComponent(cat);
     }
 
-    // Fitur pencarian
     const searchInput = document.getElementById('searchInput');
     const searchBtn = document.getElementById('searchBtn');
     searchBtn.addEventListener('click', doSearch);
@@ -287,7 +309,6 @@
       });
     }
 
-    // ===== SISTEM KERANJANG (Menggunakan Local Storage) =====
     const CART_KEY = 'tubes_cart_v1';
     function getCart() { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
     function setCart(cart) { localStorage.setItem(CART_KEY, JSON.stringify(cart)); updateCartCount(); }
