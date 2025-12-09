@@ -18,7 +18,11 @@ class UserFactory extends Factory
 
     /**
      * Define the model's default state.
+<<<<<<< HEAD
      *
+=======
+     * 
+>>>>>>> e6f494f (Initial commit lokal sebelum sinkron dengan GitHub)
      * @return array<string, mixed>
      */
     public function definition(): array

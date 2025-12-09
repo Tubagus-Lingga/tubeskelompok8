@@ -58,4 +58,8 @@ class RegisteredUserController extends Controller
         // 4. Redirect ke halaman setelah pendaftaran berhasil
         return redirect()->intended('/')->with('success', 'Pendaftaran berhasil! Selamat datang di TubesBrand.');
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> e6f494f (Initial commit lokal sebelum sinkron dengan GitHub)

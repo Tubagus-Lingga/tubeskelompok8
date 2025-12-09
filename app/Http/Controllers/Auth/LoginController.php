@@ -10,6 +10,7 @@ use Illuminate\Validation\ValidationException;
 class LoginController extends Controller
 {
     /**
+<<<<<<< HEAD
      * Menampilkan formulir login.
      * Route: Route::get('/login', [LoginController::class, 'create'])->name('login');
      *
@@ -31,11 +32,27 @@ class LoginController extends Controller
     public function authenticate(Request $request)
     {
         // 1. Validasi Input
+=======
+     * Tampilkan halaman login.
+     */
+    public function create()
+    {
+        return view('login'); 
+    }
+
+    /**
+     * Proses login user.
+     */
+    public function authenticate(Request $request)
+    {
+        // Validasi input
+>>>>>>> e6f494f (Initial commit lokal sebelum sinkron dengan GitHub)
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
+<<<<<<< HEAD
         // 2. Coba Proses Otentikasi
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             // Otentikasi Berhasil
@@ -50,10 +67,35 @@ class LoginController extends Controller
         // Melempar exception yang akan ditangkap Laravel untuk mengembalikan error validasi ke form
         throw ValidationException::withMessages([
             'email' => __('Email atau Password yang Anda masukkan tidak valid.'),
+=======
+        // Coba login
+        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+
+            // Regenerate session (Wajib untuk keamanan)
+            $request->session()->regenerate();
+
+            $user = Auth::user();
+
+            // Redirect ADMIN
+            if ($user->role === 'admin') {
+                return redirect()->intended('/admin')
+                                 ->with('success', 'Selamat datang Admin!');
+            }
+
+            // Redirect USER biasa
+            return redirect()->intended('/')
+                             ->with('success', 'Login berhasil!');
+        }
+
+        // Jika gagal login, kembalikan error
+        throw ValidationException::withMessages([
+            'email' => 'Email atau password tidak cocok dengan data kami.',
+>>>>>>> e6f494f (Initial commit lokal sebelum sinkron dengan GitHub)
         ]);
     }
 
     /**
+<<<<<<< HEAD
      * Logout pengguna.
      * Route: Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth')->name('logout');
      *
@@ -69,5 +111,19 @@ class LoginController extends Controller
         $request->session()->regenerateToken(); // Buat token CSRF baru
 
         return redirect('/')->with('status', 'Anda telah berhasil keluar.');
+=======
+     * Logout user.
+     */
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        // Hancurkan session
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/')
+               ->with('status', 'Anda telah berhasil keluar.');
+>>>>>>> e6f494f (Initial commit lokal sebelum sinkron dengan GitHub)
     }
 }

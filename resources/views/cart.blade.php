@@ -58,6 +58,7 @@
     <script>
         const CART_KEY = 'tubes_cart_v1';
 
+<<<<<<< HEAD
         // URL Checkout untuk JavaScript
         const CHECKOUT_URL = "{{ route('checkout.index') }}";
 
@@ -65,24 +66,39 @@
         const rupiah = (num) => 'Rp' + num.toLocaleString('id-ID');
 
         // Baca keranjang
+=======
+        const CHECKOUT_URL = "{{ route('checkout.index') }}";
+
+        const rupiah = (num) => 'Rp' + num.toLocaleString('id-ID');
+
+>>>>>>> e6f494f (Initial commit lokal sebelum sinkron dengan GitHub)
         function getCart() {
             return JSON.parse(localStorage.getItem(CART_KEY) || '[]');
         }
 
+<<<<<<< HEAD
         // Simpan keranjang
+=======
+>>>>>>> e6f494f (Initial commit lokal sebelum sinkron dengan GitHub)
         function setCart(cart) {
             localStorage.setItem(CART_KEY, JSON.stringify(cart));
             renderCart();
         }
 
+<<<<<<< HEAD
         // Update angka jumlah di navbar
+=======
+>>>>>>> e6f494f (Initial commit lokal sebelum sinkron dengan GitHub)
         function updateCartCount() {
             const cart = getCart();
             const count = cart.reduce((a, b) => a + (b.qty || 1), 0);
             document.getElementById('cartCount').textContent = count;
         }
 
+<<<<<<< HEAD
         // Render isi keranjang
+=======
+>>>>>>> e6f494f (Initial commit lokal sebelum sinkron dengan GitHub)
         function renderCart() {
             const cart = getCart();
             const container = document.getElementById('cartItems');
@@ -112,7 +128,10 @@
             updateCartCount();
         }
 
+<<<<<<< HEAD
         // Update total harga
+=======
+>>>>>>> e6f494f (Initial commit lokal sebelum sinkron dengan GitHub)
         function updateSummary() {
             const cart = getCart();
             let subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
@@ -123,7 +142,10 @@
             document.getElementById('shipping').textContent = rupiah(shipping);
             document.getElementById('total').textContent = rupiah(total);
 
+<<<<<<< HEAD
             // Aktifkan/Nonaktifkan tombol Checkout
+=======
+>>>>>>> e6f494f (Initial commit lokal sebelum sinkron dengan GitHub)
             const checkoutBtn = document.getElementById('checkoutBtn');
             if (cart.length === 0) {
                 checkoutBtn.disabled = true;
@@ -134,13 +156,17 @@
             }
         }
 
+<<<<<<< HEAD
         // Hapus barang
+=======
+>>>>>>> e6f494f (Initial commit lokal sebelum sinkron dengan GitHub)
         function removeItem(index) {
             let cart = getCart();
             cart.splice(index, 1);
             setCart(cart);
         }
 
+<<<<<<< HEAD
         // Tindakan Checkout
         document.getElementById('checkoutBtn').addEventListener('click', () => {
             if (getCart().length === 0) return;
@@ -149,6 +175,13 @@
         });
 
         // INISIALISASI
+=======
+        document.getElementById('checkoutBtn').addEventListener('click', () => {
+            if (getCart().length === 0) return;
+            window.location.href = CHECKOUT_URL;
+        });
+
+>>>>>>> e6f494f (Initial commit lokal sebelum sinkron dengan GitHub)
         renderCart();
     </script>
 </body>

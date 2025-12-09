@@ -11,8 +11,22 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+<<<<<<< HEAD
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
+=======
+
+        // 👉 Tambahkan ini
+        $middleware->alias([
+            'admin' => \App\Http\Middleware\Admin::class,
+        ]);
+
+    })
+    ->withExceptions(function (Exceptions $exceptions): void {
+        //
+    })
+    ->create();
+>>>>>>> e6f494f (Initial commit lokal sebelum sinkron dengan GitHub)

@@ -324,4 +324,8 @@
     </script>
 </body>
 
+<<<<<<< HEAD
 </html>
+=======
+</html>
+>>>>>>> e6f494f (Initial commit lokal sebelum sinkron dengan GitHub)

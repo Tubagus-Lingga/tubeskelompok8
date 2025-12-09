@@ -88,15 +88,22 @@
     </div>
 
     <script>
+<<<<<<< HEAD
         // FIXED: Mendefinisikan URL Home menggunakan Blade
         const HOME_URL = "{{ route('home') }}";
         // Menggunakan cart sebagai key yang benar seperti di cart.blade.php
+=======
+        const HOME_URL = "{{ route('home') }}";
+>>>>>>> e6f494f (Initial commit lokal sebelum sinkron dengan GitHub)
         const CART_KEY = 'tubes_cart_v1';
 
         function rupiah(n) {
             return 'Rp' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
         }
+<<<<<<< HEAD
         // FIXED: Menggunakan CART_KEY yang benar
+=======
+>>>>>>> e6f494f (Initial commit lokal sebelum sinkron dengan GitHub)
         function loadCart() {
             try {
                 return JSON.parse(localStorage.getItem(CART_KEY) || '[]')
@@ -120,6 +127,7 @@
                 const qty = it.qty || 1;
                 subtotal += it.price * qty;
                 html +=
+<<<<<<< HEAD
                     <div class="d-flex justify-content-between">${it.name} <strong class="text-end">${rupiah(it.price)} x ${qty} = ${rupiah(it.price * qty)}</strong></div>;
             });
             const shipping = subtotal > 0 ? 15000 : 0;
@@ -127,6 +135,15 @@
             html += <div class="d-flex justify-content-between"><span>Subtotal</span><strong>${rupiah(subtotal)}</strong></div>;
             html += <div class="d-flex justify-content-between"><span>Ongkir</span><strong>${rupiah(shipping)}</strong></div>;
             html += <div class="d-flex justify-content-between mt-2"><span>Total</span><h5>${rupiah(subtotal + shipping)}</h5></div>;
+=======
+                    `<div class="d-flex justify-content-between">${it.name} <strong class="text-end">${rupiah(it.price)} x ${qty} = ${rupiah(it.price * qty)}</strong></div>`;
+            });
+            const shipping = subtotal > 0 ? 15000 : 0;
+            html += '<hr>';
+            html += `<div class="d-flex justify-content-between"><span>Subtotal</span><strong>${rupiah(subtotal)}</strong></div>`;
+            html += `<div class="d-flex justify-content-between"><span>Ongkir</span><strong>${rupiah(shipping)}</strong></div>`;
+            html += `<div class="d-flex justify-content-between mt-2"><span>Total</span><h5>${rupiah(subtotal + shipping)}</h5></div>`;
+>>>>>>> e6f494f (Initial commit lokal sebelum sinkron dengan GitHub)
             el.innerHTML = html;
         }
         renderSummary();
@@ -167,10 +184,15 @@
                 accname: document.getElementById('accname').value
             };
             localStorage.setItem('lastOrder', JSON.stringify(order));
+<<<<<<< HEAD
             // FIXED: Menggunakan CART_KEY yang benar
             localStorage.removeItem(CART_KEY);
             alert('Pesanan sukses! ID: ' + order.id);
             // FIXED: Menggunakan HOME_URL yang sudah didefinisikan dari route Blade
+=======
+            localStorage.removeItem(CART_KEY);
+            alert('Pesanan sukses! ID: ' + order.id);
+>>>>>>> e6f494f (Initial commit lokal sebelum sinkron dengan GitHub)
             window.location.href = HOME_URL;
         });
     </script>
