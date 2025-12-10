@@ -1,12 +1,16 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisteredUserController; 
-use App\Http\Controllers\HomeController; 
-use App\Http\Controllers\ProductController; 
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Admin\AdminController;
+
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\PaymentController;
+
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth; // YANG BENAR
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,11 +20,25 @@ use Illuminate\Support\Facades\Auth; // YANG BENAR
 
 // 1. ROUTE HOME & PRODUK
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/katalog', [ProductController::class, 'index'])->name('katalog'); 
-Route::get('/detail/{slug}', [ProductController::class, 'show'])->name('detail'); 
+Route::get('/katalog', [ProductController::class, 'index'])->name('katalog');
+Route::get('/detail/{slug}', [ProductController::class, 'show'])->name('detail');
 
-Route::get('/cart', fn() => view('cart'))->name('cart.index');
-Route::get('/checkout', fn() => view('checkout'))->name('checkout.index');
+Route::get('/cart', fn () => view('cart'))->name('cart.index');
+
+// Checkout page (ambil produk dari DB)
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+
+/*
+|--------------------------------------------------------------------------
+| CHECKOUT & PEMBAYARAN (Backend - Lingga)
+| Aman: route spesifik biar gak nabrak kerjaan temen
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth'])->group(function () {
+    Route::post('/checkout/process', [CheckoutController::class, 'store'])->name('checkout.process');
+    Route::post('/checkout/payments/{payment}/success', [PaymentController::class, 'success'])->name('checkout.payments.success');
+    Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
+});
 
 // 2. ROUTE AUTH (LOGIN/REGISTER)
 Route::middleware(['guest'])->group(function () {
@@ -43,7 +61,6 @@ Route::middleware(['auth', 'admin'])
     ->group(function () {
 
         Route::get('/', [AdminController::class, 'index'])->name('dashboard');
-        
 
         // CRUD PRODUK
         Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
