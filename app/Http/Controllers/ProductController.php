@@ -8,13 +8,20 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::latest()->get();
-        return view('products.index', compact('products'));
+        $products = Product::where('stock', '>', 0)
+            ->latest()
+            ->paginate(12);
+
+        return view('katalog', compact('products'));
     }
 
     public function show($id)
     {
-        $product = Product::findOrFail($id);
+        // ✅ Produk stok 0 otomatis tidak bisa diakses (akan 404)
+        $product = Product::where('id', $id)
+            ->where('stock', '>', 0)
+            ->firstOrFail();
+
         return view('products.show', compact('product'));
     }
 }

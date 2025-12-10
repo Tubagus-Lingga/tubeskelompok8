@@ -55,7 +55,7 @@
                         <li class="nav-item ms-2"><a class="btn btn-outline-primary btn-sm" href="{{ route('login') }}">Masuk</a></li>
                     @endauth
                     <li class="nav-item ms-2">
-                        <a class="btn btn-brand" href="{{ route('cart.index') }}">
+                        <a class="btn btn-brand" href="{{ route('checkout.index') }}">
                             Keranjang (<span id="cartCount">0</span>)
                         </a>
                     </li>

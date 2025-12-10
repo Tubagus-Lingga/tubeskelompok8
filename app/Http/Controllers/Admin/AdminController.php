@@ -10,13 +10,18 @@ use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
-    public function index()
-    {
-        // Hitung total data
-        $totalProduk = Product::count();
-        $pesananBaru = 0; // contoh filter pesanan baru
-        $totalUser = User::count();
+public function index()
+{
+    // Hitung total data
+    $totalProduk = Product::count();
 
-        return view('admin.dashboard-home', compact('totalProduk', 'pesananBaru', 'totalUser'));
-    }
+    // ✅ Pesanan baru: order yang sudah dibayar
+    // (sesuai flow kamu: saat sukses, order->status jadi 'paid')
+    $pesananBaru = Order::where('status', 'paid')->count();
+
+    $totalUser = User::count();
+
+    return view('admin.dashboard-home', compact('totalProduk', 'pesananBaru', 'totalUser'));
+}
+
 }
