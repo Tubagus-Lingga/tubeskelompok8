@@ -1,81 +1,51 @@
-<!doctype html>
-<html lang="id">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>TubesBrand — Login</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        :root{ --brand:#151B54; }
-        body{ background:#f6f7fb; font-family:Inter, Arial; }
-        .card{ max-width:520px; margin:4rem auto; }
-        .btn-brand{ background:var(--brand); color:#fff; border:none; }
-        .btn-brand:hover{ background:#0f1640; color:#fff; }
-    </style>
-</head>
-<body>
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <h4 class="card-title mb-3">Masuk ke TubesBrand</h4>
+@extends('layouts.app')
 
-            <div id="msg">
-                @if (session('success') || session('status'))
-                    <div class="alert alert-success">{{ session('success') ?? session('status') }}</div>
-                @endif
-                
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        Email atau password yang Anda masukkan tidak valid.
-                    </div>
-                @endif
+@section('title', 'LOGIN | VIBRANT')
+
+@section('content')
+<div class="container py-5 d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+    <div style="max-width: 400px; width: 100%;">
+        <div class="text-center mb-5">
+            <h1 class="fw-bold mb-0" style="letter-spacing: -0.05em;">LOGIN</h1>
+            <p class="text-muted small text-uppercase">Welcome back.</p>
+        </div>
+
+        @if (session('success') || session('status'))
+            <div class="alert alert-dark rounded-0 small mb-4">{{ session('success') ?? session('status') }}</div>
+        @endif
+        
+        @if ($errors->any())
+            <div class="alert alert-danger rounded-0 small mb-4">
+                Invalid credentials. Please try again.
             </div>
+        @endif
 
-            <form method="POST" action="{{ route('login.submit') }}">
-                @csrf 
-
-                <div class="mb-3">
-                    <label class="form-label small">Email</label>
-                    <input 
-                        id="email" 
-                        name="email" 
-                        class="form-control @error('email') is-invalid @enderror" 
-                        type="email" 
-                        placeholder="you@example.com" 
-                        value="{{ old('email') }}" 
-                        required 
-                        autofocus>
-                    @error('email')
-                        <div class="text-danger small mt-1">{{ $message }}</div>
-                    @enderror
-                </div>
-                
-                <div class="mb-3">
-                    <label class="form-label small">Password</label>
-                    <input 
-                        id="password" 
-                        name="password" 
-                        class="form-control @error('password') is-invalid @enderror" 
-                        type="password" 
-                        placeholder="••••••" 
-                        required>
-                    @error('password')
-                        <div class="text-danger small mt-1">{{ $message }}</div>
-                    @enderror
-                </div>
-                
-                <div class="mb-3 form-check">
-                    <input type="checkbox" name="remember" id="remember" class="form-check-input">
-                    <label class="form-check-label small" for="remember">Ingat Saya</label>
-                </div>
-
-                <div class="d-flex justify-content-between align-items-center">
-                    <button type="submit" class="btn btn-brand">Masuk</button>
-                    <a href="{{ route('register') }}" class="small text-decoration-none">Belum punya akun? Daftar</a>
-                </div>
-            </form>
+        <form method="POST" action="{{ route('login.submit') }}">
+            @csrf
+            <div class="mb-3">
+                <label class="fw-bold small text-uppercase mb-1">Email Address</label>
+                <input type="email" name="email" class="form-control rounded-0 p-2" placeholder="name@example.com" value="{{ old('email') }}" required autofocus style="border: 1px solid #ddd;">
             </div>
+            
+            <div class="mb-4">
+                <label class="fw-bold small text-uppercase mb-1">Password</label>
+                <input type="password" name="password" class="form-control rounded-0 p-2" placeholder="••••••••" required style="border: 1px solid #ddd;">
+            </div>
+            
+            <div class="mb-4 d-flex justify-content-between align-items-center small">
+                <div class="form-check">
+                    <input class="form-check-input rounded-0 bg-dark border-dark" type="checkbox" name="remember" id="remember">
+                    <label class="form-check-label" for="remember">Remember me</label>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-dark w-100 rounded-0 py-2 fw-bold text-uppercase mb-3">Sign In</button>
+            
+            <div class="text-center small">
+                <span class="text-muted">Don't have an account?</span> 
+                <a href="{{ route('register') }}" class="text-dark fw-bold text-decoration-none">Sign Up</a>
+            </div>
+        </form>
     </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    </body>
-</html>
+</div>
+@endsection

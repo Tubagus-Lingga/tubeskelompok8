@@ -1,217 +1,338 @@
-<!doctype html>
-<html lang="id">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>TubesBrand — Katalog</title>
+@extends('layouts.app')
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+@section('title', 'SHOP | VIBRANT')
 
-    <style>
-        :root{
-            --brand: #151B54;
-            --white: #ffffff;
-            --black: #000000;
-            --muted: #6b7280;
-            --card-bg: #fbfdff;
-        }
-        body{ font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; background:#f6f7fb; color:var(--black); }
-        .navbar-brand { color: var(--brand); font-weight:700; }
-        .page-title { color: var(--brand); }
-        .product-card img{ height: 220px; object-fit:cover; border-bottom: 1px solid rgba(0,0,0,0.04); }
-        .btn-brand { background: var(--brand); color: var(--white); border: none; }
-        .btn-outline-brand { border-color: var(--brand); color: var(--brand); }
-        .badge-category{ background: rgba(21,27,84,0.08); color: var(--brand); font-weight:600; }
-        .filter-panel { background: var(--card-bg); border-radius: .5rem; padding: 1rem; }
-        .pagination .page-link { color: var(--brand); }
-        footer{ background:#151B54; color:#fff; padding:1.5rem 0; margin-top:2.5rem; }
-    </style>
-</head>
-<body>
+@section('styles')
+<style>
+    /* CATALOG SPECIFIC STYLES */
+    .filter-group {
+        border-bottom: 1px solid #e5e5e5;
+        padding-bottom: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .filter-title {
+        font-weight: 800;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+    }
+    .filter-link {
+        display: block;
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        transition: color 0.2s;
+        text-transform: capitalize;
+    }
+    .filter-link:hover, .filter-link.active {
+        color: #000;
+        font-weight: 600;
+    }
+
+    /* PRODUCT GRID */
+    .product-grid-item {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem; /* Ensure spacing */
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .product-img-wrap {
+        position: relative;
+        background: #f4f4f4;
+        width: 100%;
+        padding-top: 100%; /* Force 1:1 Aspect Ratio via padding hack */
+        overflow: hidden;
+        margin-bottom: 1rem;
+        display: block;
+        border-radius: 0;
+    }
+    .product-img-wrap img {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; 
+        height: 100%;
+        object-fit: cover;
+        mix-blend-mode: multiply;
+        transition: transform 0.5s ease;
+        display: block;
+    }
+    .product-img-wrap:hover img {
+        transform: scale(1.05);
+    }
     
-    <nav class="navbar navbar-expand-lg bg-white sticky-top shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="{{ route('home') }}">TUBESBRAND</a> 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain2">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+    .product-meta {
+        text-align: left;
+    }
+    .product-title {
+        font-weight: 800;
+        font-size: 1rem;
+        text-transform: uppercase;
+        margin-bottom: 0.25rem;
+        color: #000;
+        display: block;
+    }
+    .product-price {
+        font-weight: 500;
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    /* PAGINATION */
+    .page-link {
+        border: none;
+        color: #000;
+        font-weight: 600;
+        background: transparent;
+    }
+    .page-item.active .page-link {
+        background: #000;
+        color: #fff;
+        border-radius: 0;
+    }
+</style>
+@endsection
 
-            <div class="collapse navbar-collapse" id="navMain2">
-                <form class="d-flex ms-auto my-2 my-lg-0" role="search" onsubmit="return false;">
-                    <input id="searchInput" class="form-control me-2" type="search" placeholder="Cari produk..." aria-label="Search">
-                    <button id="searchBtn" class="btn btn-outline-brand" type="button">Cari</button>
-                </form>
-                <ul class="navbar-nav ms-3 mb-2 mb-lg-0 align-items-lg-center">
-                    <li class="nav-item"><a class="nav-link" href="{{ route('katalog') }}">Katalog</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Home</a></li>
-                    @auth
-                        <li class="nav-item ms-2">
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="btn btn-outline-secondary btn-sm">Keluar ({{ Auth::user()->name }})</button>
-                            </form>
-                        </li>
-                    @else
-                        <li class="nav-item ms-2"><a class="btn btn-outline-primary btn-sm" href="{{ route('login') }}">Masuk</a></li>
-                    @endauth
-                    <li class="nav-item ms-2">
-                        <a class="btn btn-brand" href="{{ route('cart.index') }}">
-                            Keranjang (<span id="cartCount">0</span>)
-                        </a>
-                    </li>
-                </ul>
-            </div>
+@section('content')
+<div class="container py-5">
+    
+    <!-- PAGE HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-5 border-bottom pb-4">
+        <div>
+            <h1 class="display-5 fw-bold mb-0">SHOP</h1>
+            <p class="text-muted mb-0">
+                @if(request('q'))
+                    Search results for "{{ request('q') }}"
+                @else
+                    All Collections
+                @endif
+            </p>
         </div>
-    </nav>
-    <main class="container my-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
-                <h1 class="page-title h4 mb-0">Katalog Produk</h1>
-                <small class="text-muted">Temukan koleksi terbaik kami</small>
-            </div>
+        
+        <!-- SORTING -->
+        <form id="sortForm" method="GET" action="{{ route('katalog') }}" class="d-flex align-items-center">
+            @if(request('q')) <input type="hidden" name="q" value="{{ request('q') }}"> @endif
+            @if(request('category')) <input type="hidden" name="category" value="{{ request('category') }}"> @endif
+            
+            <label class="small fw-bold me-2 text-uppercase">Sort By:</label>
+            <select name="sort" class="form-select form-select-sm rounded-0 border-0 bg-light" style="width: auto; font-weight:600;" onchange="this.form.submit()">
+                <option value="default" {{ $sort==='default' ? 'selected' : '' }}>Relevance</option>
+                <option value="price_asc" {{ $sort==='price_asc' ? 'selected' : '' }}>Price: Low to High</option>
+                <option value="price_desc" {{ $sort==='price_desc' ? 'selected' : '' }}>Price: High to Low</option>
+            </select>
+        </form>
+    </div>
 
-            <div class="d-flex gap-2 align-items-center">
-                <label class="mb-0 me-2 text-muted">Sortir:</label>
-                <select id="sortSelect" class="form-select form-select-sm" disabled>
-                    <option value="default">Default</option>
-                    {{-- Opsi ini memerlukan logika di Controller Laravel untuk berfungsi --}}
-                </select>
-            </div>
-        </div>
-
-        <div class="row">
-            <aside class="col-12 col-md-3 mb-4">
-                <div class="filter-panel shadow-sm">
-                    <h6 class="mb-3">Filter</h6>
-                    <p class="small text-muted">Fitur Filter Dinonaktifkan (perlu logika server)</p>
-                    
-                    <div class="mb-3">
-                        <label class="form-label small">Kategori</label>
-                        <div id="categoryList" class="d-flex flex-column gap-2"></div>
-                    </div>
-                    
-                    <div class="mb-2">
-                        <button id="applyFilter" class="btn btn-brand w-100" disabled>Terapkan</button>
-                    </div>
-                    <div>
-                        <button id="clearFilter" class="btn btn-outline-secondary w-100" disabled>Reset</button>
-                    </div>
+    <div class="row">
+        <!-- SIDEBAR -->
+        <aside class="col-md-3 mb-5">
+            <div class="sticky-top" style="top: 100px;">
+                <!-- SEARCH WIDGET -->
+                <div class="mb-4">
+                    <h6 class="fw-bold text-uppercase mb-2">Search</h6>
+                    <form action="{{ route('katalog') }}" method="GET" class="position-relative">
+                        <!-- Preserve current category if searching -->
+                        @if(request('category')) 
+                            <input type="hidden" name="category" value="{{ request('category') }}"> 
+                        @endif
+                         @if(request('sort')) 
+                            <input type="hidden" name="sort" value="{{ request('sort') }}"> 
+                        @endif
+                        
+                        <input type="text" name="q" 
+                               class="form-control rounded-0 form-control-sm border-dark ps-2" 
+                               placeholder="Search products..." 
+                               value="{{ request('q') }}">
+                        <button type="submit" class="btn btn-link position-absolute top-0 end-0 text-dark p-1 text-decoration-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                            </svg>
+                        </button>
+                    </form>
                 </div>
-            </aside>
-            <section class="col-12 col-md-9">
+
+                <!-- CATEGORY WIDGET -->
+                <div class="filter-group border-0">
+                    <h6 class="fw-bold text-uppercase mb-2">Categories</h6>
+                    <nav class="nav flex-column gap-1">
+                        <a href="{{ route('katalog', ['q'=>request('q'), 'sort'=>request('sort')]) }}" 
+                           class="filter-link {{ !request('category') ? 'active fw-bold text-black' : '' }}">
+                           All Collections
+                        </a>
+                        @foreach($categories as $cat)
+                            <a href="{{ route('katalog', [
+                                    'category' => $cat, 
+                                    'q' => request('q'), 
+                                    'sort' => request('sort')
+                               ]) }}" 
+                               class="filter-link {{ request('category') === $cat ? 'active fw-bold text-black' : '' }}">
+                               {{ ucfirst($cat) }}
+                            </a>
+                        @endforeach
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- PRODUCT GRID -->
+        <div class="col-md-9">
+            @if($products->isEmpty())
+                <div class="py-5 text-center">
+                    <h4 class="fw-bold">No products found.</h4>
+                    <a href="{{ route('katalog') }}" class="btn btn-outline-brand mt-3">Clear Filters</a>
+                </div>
+            @else
                 <div class="row g-4">
-                    
-                    {{-- *** START: BLADE LOOP UNTUK MENAMPILKAN DATA DARI LARAVEL *** --}}
-                    
-                    @if($products->isEmpty())
-                        <div class="col-12">
-                            <div class="alert alert-warning text-center">
-                                Belum ada produk yang tersedia.
-                            </div>
-                        </div>
-                    @else
-                        @foreach($products as $product)
-                        <div class="col-6 col-md-4 col-lg-4">
-                            <div class="card product-card h-100 shadow-sm" data-id="{{ $product->id }}" data-name="{{ $product->name }}" data-price="{{ $product->price }}">
-                                
-                                {{-- Pastikan kolom 'image' ada di database, gunakan asset() atau url storage --}}
-                                <img src="{{ asset('storage/' . $product->image) }}" class="card-img-top" alt="{{ $product->name }}">
-                                
-                                <div class="card-body d-flex flex-column">
-                                    {{-- Pastikan kolom 'category' ada --}}
-                                    <small class="badge badge-category mb-2">{{ $product->category }}</small>
-                                    
-                                    <h6 class="card-title mb-1">{{ $product->name }}</h6>
-                                    
-                                    {{-- Tampilkan deskripsi singkat, menggunakan Str::limit jika Anda mengimpor facade Str --}}
-                                    <p class="small text-muted mb-2">{{ Str::limit($product->desc ?? $product->description, 50) }}</p>
-                                    
-                                    <div class="mt-auto d-flex justify-content-between align-items-center">
-                                        {{-- Format harga Rupiah --}}
-                                        <strong>Rp{{ number_format($product->price, 0, ',', '.') }}</strong>
+                    @foreach($products as $product)
+                         @php
+                            $imgUrl = $product->image
+                                ? asset('product_images/' . $product->image)
+                                : asset('images/no-image.png');
+                        @endphp
+                        
+                        <div class="col-6 col-md-4">
+                            <div class="product-grid-item h-100">
+                                <div class="product-img-wrap">
+                                    <a href="{{ route('detail', ['slug' => $product->slug]) }}">
+                                        <img src="{{ $imgUrl }}" alt="{{ $product->name }}">
+                                    </a>
+                                    <!-- Optional Badge -->
+                                    <!-- <span class="badge bg-black text-white position-absolute top-0 start-0 m-2 rounded-0">NEW</span> -->
+                                </div>
+                                <div class="product-meta mt-3">
+                                    <div class="d-flex justify-content-between align-items-center">
                                         <div>
-                                            {{-- Link Detail (Menggunakan Slug atau ID) --}}
-                                            <a href="{{ route('detail', ['slug' => $product->slug ?? $product->id]) }}" class="btn btn-outline-brand btn-sm">Detail</a> 
-                                            
-                                            <button class="btn btn-brand btn-sm addToCartBtn">Tambah</button>
+                                            <a href="{{ route('detail', ['slug' => $product->slug]) }}" class="product-title d-block text-dark text-decoration-none" style="font-weight: 900; font-size: 1rem; line-height: 1.1;">
+                                                {{ $product->name }}
+                                            </a>
+                                            <span class="product-price d-block text-muted mt-1" style="font-size: 0.9rem; font-weight: 500;">Rp{{ number_format($product->price, 0, ',', '.') }}</span>
                                         </div>
+                                        
+                                        <button class="btn btn-outline-dark rounded-0 p-0 d-flex align-items-center justify-content-center quickAddBtn"
+                                            style="width: 32px; height: 32px; border: 1px solid #000; flex-shrink: 0;"
+                                            data-id="{{ $product->id }}"
+                                            data-name="{{ $product->name }}"
+                                            data-price="{{ $product->price }}"
+                                            data-image="{{ $imgUrl }}"
+                                            data-variants='@json($product->variants->map(fn($v) => ["size"=>$v->size, "stock"=>$v->stock]))'
+                                            title="Add to Cart">
+                                            <span style="font-size: 1.2rem; line-height: 0; margin-top: -2px;">+</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        @endforeach
-                    @endif
-                    
-                    {{-- *** END: BLADE LOOP *** --}}
+                    @endforeach
                 </div>
 
-                {{-- Pagination Laravel (gunakan ini jika Anda menggunakan Product::paginate()) --}}
-                {{-- <nav class="mt-4 d-flex justify-content-center" aria-label="Page navigation">
-                    {{ $products->links() }}
-                </nav> --}}
-            </section>
-            </div>
-    </main>
-
-    <footer>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <h5>TUBESBRAND</h5>
-                    <p style="color: #fff;">E-commerce fashion lokal. Hak cipta &copy; <span id="year"></span></p>
+                <div class="mt-5 d-flex justify-content-center">
+                    {{ $products->links('pagination::bootstrap-5') }} 
                 </div>
-                <div class="col-md-6 text-md-end">
-                    <small style="color: #fff;">Kontak: hello@tubesbrand.example</small>
-                </div>
-            </div>
+            @endif
         </div>
-    </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    </div>
+</div>
 
-    <script>
-        document.getElementById('year').textContent = new Date().getFullYear();
-        
-        // HAPUS SEMUA LOGIKA JAVASCRIPT LOKAL TERKAIT DATA/FILTER/SORT/PAGINATION YANG LAMA.
-        // Hanya pertahankan logika untuk Cart (Keranjang) karena itu masih menggunakan localStorage.
-        
+<!-- Re-use the Size Modal Logic from Layout if we put it there, OR duplicate script section -->
+<!-- Ideally, move Size Modal to Layout to avoid duplication. For now, I'll inject the modal here too, or minimal script override -->
+<div class="modal fade" id="sizeModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content">
+      <div class="modal-header bg-black text-white">
+        <h5 class="modal-title fs-6">SELECT SIZE</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p id="sizeModalProductName" class="fw-bold mb-3 small text-uppercase"></p>
+        <div id="sizeOptions" class="d-flex flex-wrap gap-2 justify-content-center"></div>
+        <div id="sizeError" class="text-danger small mt-2 d-none text-center">
+          Select size.
+        </div>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button class="btn btn-brand w-100" id="confirmAddToCart">ADD TO CART</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+@endsection
+
+@section('scripts')
+<script>
+    window.IS_LOGGED_IN = @json(auth()->check());
+    window.LOGIN_URL = @json(route('login'));
+
+    document.addEventListener('DOMContentLoaded', () => {
         const CART_KEY = 'tubes_cart_v1';
-        
         function getCart(){ return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
-        function setCart(c){ localStorage.setItem(CART_KEY, JSON.stringify(c)); updateCartCount(); }
-        
-        function updateCartCount(){
-            const cart = getCart();
-            // Asumsi cart menyimpan item dengan properti 'qty'
-            const total = cart.reduce((sum,i)=> sum + (i.qty||1), 0);
-            const el = document.querySelector('#cartCount');
+        function setCart(c){ 
+            localStorage.setItem(CART_KEY, JSON.stringify(c)); 
+            const total = c.reduce((s,i)=> s + (i.qty || 1), 0);
+            const el = document.getElementById('global-cart-count');
             if(el) el.textContent = total;
         }
 
-        function addToCart(item){
-            const cart = getCart();
-            const idx = cart.findIndex(p=>p.id==item.id);
-            if(idx>=0) cart[idx].qty += 1; else cart.push({...item, qty:1});
-            setCart(cart);
-            alert(item.name + " berhasil ditambahkan ke keranjang!");
+        let selectedItem=null, selectedSize=null;
+
+        const sizeModal = new bootstrap.Modal(document.getElementById("sizeModal"));
+
+        function openSizeModal(item, variants){
+            selectedItem = item; selectedSize = null;
+            document.getElementById("sizeModalProductName").innerText = item.name;
+            const sizeOptionsEl = document.getElementById("sizeOptions");
+            sizeOptionsEl.innerHTML = "";
+            document.getElementById("sizeError").classList.add("d-none");
+
+            variants.forEach(v => {
+                const b = document.createElement("button");
+                b.type = "button";
+                b.className = "btn btn-outline-dark btn-sm rounded-0";
+                b.style.minWidth="40px";
+                
+                const stock = parseInt(v.stock||0);
+                 b.textContent = v.size;
+
+                if(stock<=0) { b.disabled=true; b.style.opacity="0.5"; b.style.textDecoration="line-through"; }
+
+                b.addEventListener("click", ()=>{
+                    selectedSize = v.size;
+                    sizeOptionsEl.querySelectorAll("button").forEach(x=>x.classList.remove("active","bg-black","text-white"));
+                    b.classList.add("active","bg-black","text-white");
+                    document.getElementById("sizeError").classList.add("d-none");
+                });
+                sizeOptionsEl.appendChild(b);
+            });
+            sizeModal.show();
         }
 
-        function initAddToCartButtons(){
-            document.querySelectorAll('.addToCartBtn').forEach(btn=>{
-                btn.addEventListener('click', ()=>{
-                    const card = btn.closest('.product-card');
-                    const id = parseInt(card.dataset.id); // Pastikan ID diubah ke integer
-                    const name = card.dataset.name;
-                    const price = parseInt(card.dataset.price);
-                    addToCart({id, name, price});
-                });
+        document.querySelectorAll('.quickAddBtn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const item = {
+                    id: parseInt(btn.dataset.id),
+                    name: btn.dataset.name,
+                    price: parseInt(btn.dataset.price),
+                    image: btn.dataset.image
+                };
+                const variants = JSON.parse(btn.dataset.variants || "[]");
+                if(!variants.some(v=>parseInt(v.stock)>0)) { alert("Out of stock"); return; }
+                openSizeModal(item, variants);
             });
-        }
-        
-        // Inisialisasi saat halaman dimuat
-        (function init(){
-            initAddToCartButtons(); // Tambah ke Keranjang masih berfungsi
-            updateCartCount();
-        })();
-    </script>
-</body>
-</html>
+        });
+
+        document.getElementById("confirmAddToCart").addEventListener("click", () => {
+            if(!selectedSize) { document.getElementById("sizeError").classList.remove("d-none"); return; }
+            if(!window.IS_LOGGED_IN){ window.location.href = window.LOGIN_URL; return; }
+            
+            let cart = getCart();
+            const idx = cart.findIndex(x => x.id == selectedItem.id && x.size == selectedSize);
+            if(idx >= 0) cart[idx].qty++; else cart.push({...selectedItem, size: selectedSize, qty: 1});
+            
+            setCart(cart);
+            sizeModal.hide();
+            alert("Added to cart");
+        });
+    });
+</script>
+@endsection
