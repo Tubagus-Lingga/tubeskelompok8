@@ -4,10 +4,17 @@
 
 This document outlines the available HTTP endpoints for the Vibrant Tubes application.
 
-- **Base URL**: `http://127.0.0.1:8000`
+- **Base URL (Local)**: `http://127.0.0.1:8000`
+- **Base URL (Live)**: `http://vibrant.page.gd`
 - **Architecture**: Monolithic (Server-Side Rendering)
 - **Response Format**: `text/html` (Web Views)
 - **Authentication**: Session-based (Cookies)
+
+### Live Environment
+The application is currently hosted on **InfinityFree**.
+- **Domain**: [vibrant.page.gd](http://vibrant.page.gd)
+- **Hosting Provider**: InfinityFree (Shared Hosting)
+- **Database**: MySQL (hosted on `sql305.infinityfree.com`)
 
 ---
 
